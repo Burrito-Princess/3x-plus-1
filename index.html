@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3x + 1 calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- <script src="calc.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <input type="number" id="input">
+    <button onclick="cleararray()">click me!</button>
+    <br><br><hr>
+    <div>Most recent calculation:</div><br>
+    <span>number of steps taken to get to '1': </span><span id="n"></span><br>
+    <span>the original number: </span><span id="or"></span>
+    <br>
+    <span>The process:<br><span id="array"></span></span>
+    <br>
+    <div>Scale of the Y-axis</div>
+    <button onclick="typechart()"><span id="scale">Linear</span></button>
+    <div id="chartplace">
+            <canvas id="myChart"></canvas>
+    </div>
+    <br><hr>
+    <table>
+        <tr>
+            <th>History</th>
+            <th>og number</th>
+            <th># of steps</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td id="or1"></td>
+            <td id="n1"></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td id="or2"></td>
+            <td id="n2"></td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td id="or3"></td>
+            <td id="n3"></td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td id="or4"></td>
+            <td id="n4"></td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td id="or5"></td>
+            <td id="n5"></td>
+        </tr>
+    </table>
+    <button onclick="nohis()">Clear history</button>
+    <button onclick="cleararray()">Clear arrays</button>
+    <script>
+        let x0;
+        let x;
+        let n = 0;
+
+        let n1 = 0;
+        let or1 = 0;
+
+        let n2 = 0;
+        let or2 = 0;
+
+        let n3 = 0;
+        let or3 = 0;
+
+        let n4 = 0;
+        let or4 = 0;
+
+        let n5 = 0;
+        let or5 = 0;
+
+        const array = [];
+        const arrayn = [];
+
+        function start(){
+            x0 = document.getElementById("input").value;
+            x = x0;
+            console.log(x);
+            n = 0;
+            array.push(x);
+            arrayn.push(n);
+            formula();
+        };
+
+        function formula(){
+            if (x%2 == 0){
+                x = x / 2;
+                console.log(x);
+                array.push(x);
+                if (x == 1){
+                    n = n + 1;
+                    arrayn.push(n);
+                    n = n - 1;
+                    document.getElementById("n").innerHTML = n + 1;
+                    document.getElementById("or").innerHTML = x0;
+                    document.getElementById("array").innerHTML = array;
+                    history();
+                    
+                }else{
+                    n = n + 1;
+                    arrayn.push(n);
+                    formula();
+                };
+            }else{ 
+                x = 3 * x + 1;
+                n = n + 1;
+                console.log(x);
+                array.push(x);
+                arrayn.push(n);
+                formula();
+            }
+        };
+
+        function nohis(){
+            console.log("clear!");
+            n = 0;
+            n1 = 0;
+            n2 = 0;
+            n3 = 0;
+            n4 = 0;
+            n5 = 0;
+
+            or1 = 0;
+            or2 = 0;
+            or3 = 0;
+            or4 = 0;
+            or5 = 0;
+
+            document.getElementById("n1").innerHTML = n1;
+            document.getElementById("n2").innerHTML = n2;
+            document.getElementById("n3").innerHTML = n3;
+            document.getElementById("n4").innerHTML = n4;
+            document.getElementById("n5").innerHTML = n5;
+
+            document.getElementById("or1").innerHTML = or1;
+            document.getElementById("or2").innerHTML = or2;
+            document.getElementById("or3").innerHTML = or3;
+            document.getElementById("or4").innerHTML = or4;
+            document.getElementById("or5").innerHTML = or5;
+        };
+
+        function history(){
+            n5 = n4;
+            n4 = n3;
+            n3 = n2;
+            n2 = n1;
+            n1 = n + 1;
+
+            or5 = or4;
+            or4 = or3;
+            or3 = or2;
+            or2 = or1;
+            or1 = x0;
+            document.getElementById("n1").innerHTML = n1;
+            document.getElementById("n2").innerHTML = n2;
+            document.getElementById("n3").innerHTML = n3;
+            document.getElementById("n4").innerHTML = n4;
+            document.getElementById("n5").innerHTML = n5;
+
+            document.getElementById("or1").innerHTML = or1;
+            document.getElementById("or2").innerHTML = or2;
+            document.getElementById("or3").innerHTML = or3;
+            document.getElementById("or4").innerHTML = or4;
+            document.getElementById("or5").innerHTML = or5;
+            makechart();
+        };
+
+        let type = 'linear';
+        function typechart(){
+            console.log("typechart");
+            if (type == 'linear'){
+                type = 'logarithmic';
+                document.getElementById("scale").innerHTML = type;
+                cleararray();
+            }else{
+                type = 'linear';
+                document.getElementById("scale").innerHTML = type;
+                cleararray();
+            };
+        };
+
+        function makechart(){
+            const label = arrayn;
+            const data = array;
+            const ctx = document.getElementById('myChart');
+            
+                new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: label,
+                    datasets: [{
+                    label: 'value of the step',
+                    data: data,
+                    borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                    y: {
+                        beginAtZero: true,
+                        type: type,
+                    }
+                    }
+                }
+                });
+            };
+
+    function cleararray(){
+        console.log(array);
+        while(array.length > 0) {
+            array.pop();
+        }
+        while(arrayn.length > 0) {
+            arrayn.pop();
+        }
+        console.log(array);
+        document.getElementById("array").innerHTML = array;
+        console.log("cleared array");
+
+        const canvas = document.getElementById("myChart");
+        canvas.parentNode.removeChild(canvas);
+        const newCanvas = document.createElement("canvas");
+        newCanvas.id = "myChart";
+        document.getElementById("chartplace").appendChild(newCanvas);
+        start();
+    };
+
+    document.getElementsByTagName("body").innerHTML = "hello";
+    </script>
+    
+</body>
+</html>
